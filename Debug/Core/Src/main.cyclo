@@ -1,0 +1,7 @@
+main.c:76:5:main	19
+main.c:273:6:SystemClock_Config	3
+main.c:320:13:MX_FDCAN1_Init	2
+main.c:363:13:DALY_MX_FDCAN1_Init	2
+main.c:407:13:STH_MX_FDCAN1_Init	2
+main.c:444:13:MX_GPIO_Init	1
+main.c:488:6:Error_Handler	1

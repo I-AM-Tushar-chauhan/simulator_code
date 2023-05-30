@@ -165,6 +165,12 @@ else if(protocol_selection == 4)
 		  TM1723_Update_Screen();
 		  JLN_BMS_Communication(&hfdcan1, CellCount);
 	  }
+else if(protocol_selection == 5)
+	  {
+		  Write_7_Segment(5, 4);
+		  TM1723_Update_Screen();
+		  sonalika(&hfdcan1, CellCount);
+	  }
 //End the execution of protocol
 
 //Start to update cell count and manage the cell count
@@ -202,7 +208,7 @@ else if(protocol_selection == 4)
   if(TM1723_Read_Switches() == 2)
 	{
 	  protocol_selection++;
-	    if(protocol_selection>4)
+	    if(protocol_selection>5)
 			  {
 				  protocol_selection=0;
 			  }
@@ -212,21 +218,21 @@ else if(protocol_selection == 4)
 			  case 0://for JBD
 				  HAL_FDCAN_Stop(&hfdcan1);
 				  //FDCAN_HandleTypeDef hfdcan1;
-				  MX_FDCAN1_Init();
+				  MX_FDCAN1_Init();//500Kbps
 				  HAL_FDCAN_Start(&hfdcan1);
 				  HAL_Delay(1);
 				  break;
 			  case 1://for DALY
 				  HAL_FDCAN_Stop(&hfdcan1);
 				 // FDCAN_HandleTypeDef DALY_hfdcan1;
-				  DALY_MX_FDCAN1_Init();
+				  DALY_MX_FDCAN1_Init();//250Kbps
 				  HAL_FDCAN_Start(&hfdcan1);
 				  HAL_Delay(1);
 				  break;
 			  case 2://for Ruchira New
 				  HAL_FDCAN_Stop(&hfdcan1);
 				 // FDCAN_HandleTypeDef STH_hfdcan1;
-				  STH_MX_FDCAN1_Init();
+				  STH_MX_FDCAN1_Init();//500Kbps
 				  HAL_FDCAN_Start(&hfdcan1);
 				  HAL_Delay(1);
 				  break;
@@ -234,21 +240,21 @@ else if(protocol_selection == 4)
 			  case 4: //for Inverted Daly
 				  HAL_FDCAN_Stop(&hfdcan1);
 				 // FDCAN_HandleTypeDef STH_hfdcan1;
-				  MX_FDCAN1_Init();
+				  MX_FDCAN1_Init();//500Kbps
 				  HAL_FDCAN_Start(&hfdcan1);
 				  HAL_Delay(1);
 				  break;
-//			  case 4://for JLN
-//				  HAL_FDCAN_Stop(&hfdcan1);
-//				 // FDCAN_HandleTypeDef JLN;
-//				  MX_FDCAN1_Init();
-//				  HAL_FDCAN_Start(&hfdcan1);
-//				  HAL_Delay(1);
-//				  break;
+			  case 5://for sonalika
+				  HAL_FDCAN_Stop(&hfdcan1);
+				 // FDCAN_HandleTypeDef JLN;
+				  DALY_MX_FDCAN1_Init();//250Kbps
+				  HAL_FDCAN_Start(&hfdcan1);
+				  HAL_Delay(1);
+				  break;
 			  default://By default it is a JBD
 				  HAL_FDCAN_Stop(&hfdcan1);
 				  //FDCAN_HandleTypeDef hfdcan1;
-				  MX_FDCAN1_Init();
+				  MX_FDCAN1_Init();//500Kbps
 				  HAL_FDCAN_Start(&hfdcan1);
 				  HAL_Delay(1);
 				  break;

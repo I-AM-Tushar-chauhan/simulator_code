@@ -2,6 +2,7 @@
 "./Core/Src/DALY_communication.o"
 "./Core/Src/JLN_Phenix.o"
 "./Core/Src/STH_CAN_Simulator.o"
+"./Core/Src/Sonalika.o"
 "./Core/Src/TM1723_LCD.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32g4xx_hal_msp.o"

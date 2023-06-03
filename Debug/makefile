@@ -66,8 +66,8 @@ all: main-build
 main-build: stm-can-simulator.elf secondary-outputs
 
 # Tool invocations
-stm-can-simulator.elf stm-can-simulator.map: $(OBJS) $(USER_OBJS) C:\Users\parth\Desktop\Neenjas\ Technologies\Software\STM32_Projects\stm-can-simulator\STM32G431C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "stm-can-simulator.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\parth\Desktop\Neenjas Technologies\Software\STM32_Projects\stm-can-simulator\STM32G431C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="stm-can-simulator.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+stm-can-simulator.elf stm-can-simulator.map: $(OBJS) $(USER_OBJS) E:\Production\ codes\GIT-HUB\stm-can-simulator\STM32G431C8TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "stm-can-simulator.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\Production codes\GIT-HUB\stm-can-simulator\STM32G431C8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="stm-can-simulator.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -26,6 +26,7 @@
 #include "STH_CAN_Simulator.h"
 #include "JLN_Phenix.h"
 #include "Sonalika.h"
+#include "EXIDE.h"
 
 /* USER CODE END Includes */
 
@@ -58,9 +59,8 @@ uint8_t fg_protocol_selection =0;//flag to set protocols
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_FDCAN1_Init(void);
-static void DALY_MX_FDCAN1_Init(void);
 static void STH_MX_FDCAN1_Init(void);
-//static void JLN_Phenix(void);
+static void DALY_MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -172,6 +172,12 @@ else if(protocol_selection == 5)
 		  TM1723_Update_Screen();
 		  sonalika(&hfdcan1, CellCount);
 	  }
+else if(protocol_selection == 6)
+	  {
+		  Write_7_Segment(6, 4);
+		  TM1723_Update_Screen();
+		  EXIDE(&hfdcan1, CellCount);
+	  }
 //End the execution of protocol
 
 //Start to update cell count and manage the cell count
@@ -209,7 +215,7 @@ else if(protocol_selection == 5)
   if(TM1723_Read_Switches() == 2)
 	{
 	  protocol_selection++;
-	    if(protocol_selection>5)
+	    if(protocol_selection>6)
 			  {
 				  protocol_selection=0;
 			  }
@@ -249,6 +255,13 @@ else if(protocol_selection == 5)
 				  HAL_FDCAN_Stop(&hfdcan1);
 				 // FDCAN_HandleTypeDef JLN;
 				  DALY_MX_FDCAN1_Init();//250Kbps
+				  HAL_FDCAN_Start(&hfdcan1);
+				  HAL_Delay(1);
+				  break;
+			  case 6://for sonalika
+				  HAL_FDCAN_Stop(&hfdcan1);
+				 // FDCAN_HandleTypeDef JLN;
+				  MX_FDCAN1_Init();//500Kbps
 				  HAL_FDCAN_Start(&hfdcan1);
 				  HAL_Delay(1);
 				  break;
@@ -319,6 +332,11 @@ void SystemClock_Config(void)
   }
 }
 
+/**
+  * @brief FDCAN1 Initialization Function
+  * @param None
+  * @retval None
+  */
 /**
   * @brief FDCAN1 Initialization Function
   * @param None
@@ -405,6 +423,7 @@ static void DALY_MX_FDCAN1_Init(void)
 
 }
 
+
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -448,9 +467,16 @@ static void STH_MX_FDCAN1_Init(void)//for JBD
   /* USER CODE END FDCAN1_Init 2 */
 
 }
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
+/* USER CODE BEGIN MX_GPIO_Init_1 */
+/* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -482,6 +508,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(LCD_MISO_GPIO_Port, &GPIO_InitStruct);
 
+/* USER CODE BEGIN MX_GPIO_Init_2 */
+/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */

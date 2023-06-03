@@ -72,6 +72,7 @@ void Error_Handler(void);
 #define LCD_MISO_GPIO_Port GPIOB
 #define LCD_MOSI_Pin GPIO_PIN_5
 #define LCD_MOSI_GPIO_Port GPIOB
+
 /* USER CODE BEGIN Private defines */
 //#define LCD_NSS_Pin 			SPI3_NSS_Pin
 //#define LCD_NSS_GPIO_Port   	SPI3_NSS_GPIO_Port

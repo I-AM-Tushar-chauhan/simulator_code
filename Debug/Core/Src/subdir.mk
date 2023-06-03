@@ -7,6 +7,7 @@
 C_SRCS += \
 ../Core/Src/CAN_Communication.c \
 ../Core/Src/DALY_communication.c \
+../Core/Src/EXIDE.c \
 ../Core/Src/JLN_Phenix.c \
 ../Core/Src/STH_CAN_Simulator.c \
 ../Core/Src/Sonalika.c \
@@ -21,6 +22,7 @@ C_SRCS += \
 OBJS += \
 ./Core/Src/CAN_Communication.o \
 ./Core/Src/DALY_communication.o \
+./Core/Src/EXIDE.o \
 ./Core/Src/JLN_Phenix.o \
 ./Core/Src/STH_CAN_Simulator.o \
 ./Core/Src/Sonalika.o \
@@ -35,6 +37,7 @@ OBJS += \
 C_DEPS += \
 ./Core/Src/CAN_Communication.d \
 ./Core/Src/DALY_communication.d \
+./Core/Src/EXIDE.d \
 ./Core/Src/JLN_Phenix.d \
 ./Core/Src/STH_CAN_Simulator.d \
 ./Core/Src/Sonalika.d \
@@ -54,7 +57,7 @@ Core/Src/%.o Core/Src/%.su Core/Src/%.cyclo: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/CAN_Communication.cyclo ./Core/Src/CAN_Communication.d ./Core/Src/CAN_Communication.o ./Core/Src/CAN_Communication.su ./Core/Src/DALY_communication.cyclo ./Core/Src/DALY_communication.d ./Core/Src/DALY_communication.o ./Core/Src/DALY_communication.su ./Core/Src/JLN_Phenix.cyclo ./Core/Src/JLN_Phenix.d ./Core/Src/JLN_Phenix.o ./Core/Src/JLN_Phenix.su ./Core/Src/STH_CAN_Simulator.cyclo ./Core/Src/STH_CAN_Simulator.d ./Core/Src/STH_CAN_Simulator.o ./Core/Src/STH_CAN_Simulator.su ./Core/Src/Sonalika.cyclo ./Core/Src/Sonalika.d ./Core/Src/Sonalika.o ./Core/Src/Sonalika.su ./Core/Src/TM1723_LCD.cyclo ./Core/Src/TM1723_LCD.d ./Core/Src/TM1723_LCD.o ./Core/Src/TM1723_LCD.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32g4xx_hal_msp.cyclo ./Core/Src/stm32g4xx_hal_msp.d ./Core/Src/stm32g4xx_hal_msp.o ./Core/Src/stm32g4xx_hal_msp.su ./Core/Src/stm32g4xx_it.cyclo ./Core/Src/stm32g4xx_it.d ./Core/Src/stm32g4xx_it.o ./Core/Src/stm32g4xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32g4xx.cyclo ./Core/Src/system_stm32g4xx.d ./Core/Src/system_stm32g4xx.o ./Core/Src/system_stm32g4xx.su
+	-$(RM) ./Core/Src/CAN_Communication.cyclo ./Core/Src/CAN_Communication.d ./Core/Src/CAN_Communication.o ./Core/Src/CAN_Communication.su ./Core/Src/DALY_communication.cyclo ./Core/Src/DALY_communication.d ./Core/Src/DALY_communication.o ./Core/Src/DALY_communication.su ./Core/Src/EXIDE.cyclo ./Core/Src/EXIDE.d ./Core/Src/EXIDE.o ./Core/Src/EXIDE.su ./Core/Src/JLN_Phenix.cyclo ./Core/Src/JLN_Phenix.d ./Core/Src/JLN_Phenix.o ./Core/Src/JLN_Phenix.su ./Core/Src/STH_CAN_Simulator.cyclo ./Core/Src/STH_CAN_Simulator.d ./Core/Src/STH_CAN_Simulator.o ./Core/Src/STH_CAN_Simulator.su ./Core/Src/Sonalika.cyclo ./Core/Src/Sonalika.d ./Core/Src/Sonalika.o ./Core/Src/Sonalika.su ./Core/Src/TM1723_LCD.cyclo ./Core/Src/TM1723_LCD.d ./Core/Src/TM1723_LCD.o ./Core/Src/TM1723_LCD.su ./Core/Src/main.cyclo ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32g4xx_hal_msp.cyclo ./Core/Src/stm32g4xx_hal_msp.d ./Core/Src/stm32g4xx_hal_msp.o ./Core/Src/stm32g4xx_hal_msp.su ./Core/Src/stm32g4xx_it.cyclo ./Core/Src/stm32g4xx_it.d ./Core/Src/stm32g4xx_it.o ./Core/Src/stm32g4xx_it.su ./Core/Src/syscalls.cyclo ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.cyclo ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32g4xx.cyclo ./Core/Src/system_stm32g4xx.d ./Core/Src/system_stm32g4xx.o ./Core/Src/system_stm32g4xx.su
 
 .PHONY: clean-Core-2f-Src
 

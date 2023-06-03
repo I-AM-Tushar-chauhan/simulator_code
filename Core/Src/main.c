@@ -25,6 +25,7 @@
 #include "DALY_communication.h"
 #include "STH_CAN_Simulator.h"
 #include "JLN_Phenix.h"
+#include "Sonalika.h"
 
 /* USER CODE END Includes */
 

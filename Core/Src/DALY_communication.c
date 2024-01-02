@@ -121,8 +121,8 @@ void DALY_BMS_Communication(FDCAN_HandleTypeDef* hf, uint8_t CellCount)
 					DALY_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
 					DALY_canTxData[0] = 0x00;
-					DALY_canTxData[1] = 0x01;	//	Charge and Discharge MOS on
-					DALY_canTxData[2] = 0x01;
+					DALY_canTxData[1] = 0x01;//11	//	Charge and Discharge MOS on
+					DALY_canTxData[2] = 0x01;//11
 					DALY_canTxData[3] = 0x00;	//	Date code
 					DALY_canTxData[4] = 0x00;
 					DALY_canTxData[5] = 0x00;	//	software version
@@ -196,6 +196,21 @@ void DALY_BMS_Communication(FDCAN_HandleTypeDef* hf, uint8_t CellCount)
 					if( HAL_FDCAN_GetTxFifoFreeLevel(DALY_fdcan1h) > 0)
 						HAL_FDCAN_AddMessageToTxFifoQ(DALY_fdcan1h, &DALY_TxHeader, DALY_canTxData);
 					break;
+//				case 0x18910140:	//	Mosfet status
+//					DALY_TxHeader.Identifier = 0x18914001;
+//					DALY_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+//					DALY_canTxData[0] = 0x0D;
+//					DALY_canTxData[1] = 0x48;	//Maximum cell voltage 3.4V
+//					DALY_canTxData[2] = 0x00;
+//					DALY_canTxData[3] = 0x0C;	//Minimum cell voltage 3.3V
+//					DALY_canTxData[4] = 0xE4;
+//					DALY_canTxData[5] = 0x00;	//	software version
+//					DALY_canTxData[6] = 0x00;
+//					DALY_canTxData[7] = 0x00;
+//
+//					if( HAL_FDCAN_GetTxFifoFreeLevel(DALY_fdcan1h) > 0)
+//						HAL_FDCAN_AddMessageToTxFifoQ(DALY_fdcan1h, &DALY_TxHeader, DALY_canTxData);
+//					break;
 
 			}
 		}

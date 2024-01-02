@@ -15,6 +15,8 @@
   *
   ******************************************************************************
   */
+//Version no 29-12-23 V2
+
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -27,6 +29,13 @@
 #include "JLN_Phenix.h"
 #include "Sonalika.h"
 #include "EXIDE.h"
+#include "AEIDTH.h"
+#include "Pixel.h"
+#include "GODAWARI.h"
+#include "TRONTEK.h"
+#include "RE.h"
+#include "NE.h"
+#include "BS.h"
 
 /* USER CODE END Includes */
 
@@ -47,9 +56,11 @@
 /* Private variables ---------------------------------------------------------*/
 FDCAN_HandleTypeDef hfdcan1;
 
+TIM_HandleTypeDef htim7;
+
 /* USER CODE BEGIN PV */
 uint8_t CellCount = 16;//22 by gopi sir
-uint8_t protocol_selection = 0;//1;//1 for godawari and 2 for daly
+uint8_t protocol_selection =22;//0;//1;//1 for godawari and 2 for daly
 uint8_t fg_CellCount =0;
 uint8_t fg_protocol_selection =0;//flag to set protocols
 
@@ -58,16 +69,20 @@ uint8_t fg_protocol_selection =0;//flag to set protocols
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_FDCAN1_Init(void);
-static void STH_MX_FDCAN1_Init(void);
-static void DALY_MX_FDCAN1_Init(void);
+void MX_FDCAN1_Init(void);
+static void MX_TIM7_Init(void);
+void DALY_MX_FDCAN1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+volatile uint32_t oneMinuteTimer 			= 0;    // One minute time counter variable
+volatile uint8_t oneMinutePassedFlag		= 0;    // Flag that one minute has passed
+long long unsigned int j = 0;
+uint8_t    isQuaterSecSet 					=  0;
+uint8_t    isHalfSecSet 					=  0;
 /* USER CODE END 0 */
 
 /**
@@ -99,10 +114,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_FDCAN1_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
 
   //	LCD Initializing
   //	Select battery model
+  HAL_TIM_Base_Start_IT(&htim7);
   HAL_Delay(100);
   TM1723_Initialize();
   HAL_Delay(100);
@@ -136,48 +153,184 @@ int main(void)
 if(FDCAN1->CCCR & FDCAN_CCCR_INIT_Msk) // Checking if the CCCR INIT flag is set (Bus off State)
       FDCAN1->CCCR &= ~FDCAN_CCCR_INIT;	// Resetting the flag so that bus off can be mitigated
 
-if(protocol_selection == 0)
+if(protocol_selection == 0||protocol_selection == 14)
 	  {
-		  Write_7_Segment(0, 4);
-		  TM1723_Update_Screen();
+			if(protocol_selection == 0)
+			{
+				//Write_7_Segment(10, 3);
+				Write_7_Segment(10, 3);
+				Write_7_Segment(0, 4);
+				TM1723_Update_Screen();
+			}
+			else if(protocol_selection == 14)
+			{
+				 Write_7_Segment(1, 3);
+				 Write_7_Segment(4, 4);
+				 TM1723_Update_Screen();
+			}
 		  JBD_BMS_Communication(&hfdcan1, CellCount);
 	  }
-else if(protocol_selection == 1)
+else if(protocol_selection == 1||protocol_selection == 15)
 	  {
-		  Write_7_Segment(1, 4);
-		  TM1723_Update_Screen();
+	            if(protocol_selection == 1)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(1, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 15)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(5, 4);
+					 TM1723_Update_Screen();
+				}
 		  DALY_BMS_Communication(&hfdcan1, CellCount);
 	  }
-else if(protocol_selection == 2)
+else if(protocol_selection == 2||protocol_selection == 16)
 	  {
-		  Write_7_Segment(2, 4);
-		  TM1723_Update_Screen();
-		  STH_BMS_Communication(&hfdcan1, CellCount);
+	            if(protocol_selection == 2)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(2, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 16)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(6, 4);
+					 TM1723_Update_Screen();
+				}
+		  STH_BMS_Communication(&hfdcan1, CellCount);//Akira
 	  }
-else if(protocol_selection == 3)
+else if(protocol_selection == 3 || protocol_selection == 17)
 	  {
-		  Write_7_Segment(3, 4);
-		  TM1723_Update_Screen();
-		  DALY_BMS_Communication(&hfdcan1, CellCount);
-	  }
-else if(protocol_selection == 4)
-	  {
-		  Write_7_Segment(4, 4);
-		  TM1723_Update_Screen();
+	            if(protocol_selection == 3)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(3, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 17)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(7, 4);
+					 TM1723_Update_Screen();
+				}
 		  JLN_BMS_Communication(&hfdcan1, CellCount);
 	  }
-else if(protocol_selection == 5)
+else if(protocol_selection == 4||protocol_selection == 18)
 	  {
-		  Write_7_Segment(5, 4);
-		  TM1723_Update_Screen();
+	            if(protocol_selection == 4)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(4, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 18)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(8, 4);
+					 TM1723_Update_Screen();
+				}
 		  sonalika(&hfdcan1, CellCount);
 	  }
-else if(protocol_selection == 6)
+else if(protocol_selection == 5||protocol_selection == 19)
 	  {
-		  Write_7_Segment(6, 4);
-		  TM1723_Update_Screen();
+	            if(protocol_selection == 5)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(5, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 19)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(9, 4);
+					 TM1723_Update_Screen();
+				}
+		  Pixel(&hfdcan1, CellCount);
+	  }
+else if(protocol_selection == 6||protocol_selection == 20||protocol_selection == 10 ||protocol_selection == 11)
+	  {
+	            if(protocol_selection == 6)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(6, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 20)
+				{
+					 Write_7_Segment(2, 3);
+					 Write_7_Segment(0, 4);
+					 TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 10)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(0, 4);
+					 TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 11)
+				{
+					 Write_7_Segment(1, 3);
+					 Write_7_Segment(1, 4);
+					 TM1723_Update_Screen();
+				}
 		  EXIDE(&hfdcan1, CellCount);
 	  }
+else if(protocol_selection == 7||protocol_selection == 21)
+	  {
+	if(protocol_selection == 7)
+				{
+					Write_7_Segment(10, 3);
+					Write_7_Segment(7, 4);
+					TM1723_Update_Screen();
+				}
+				else if(protocol_selection == 21)
+				{
+					 Write_7_Segment(2, 3);
+					 Write_7_Segment(1, 4);
+					 TM1723_Update_Screen();
+				}
+		  AEIDTH(&hfdcan1, CellCount);
+	  }
+else if(protocol_selection == 8)
+	  {
+		 Write_7_Segment(10, 3);
+		 Write_7_Segment(8, 4);
+		 TM1723_Update_Screen();
+		 GODAWARI(&hfdcan1, CellCount);
+	  }
+else if(protocol_selection == 9)
+	  {
+		 Write_7_Segment(10, 3);
+		 Write_7_Segment(9, 4);
+		 TM1723_Update_Screen();
+		 TRONTEK(&hfdcan1, CellCount);
+	  }
+else if(protocol_selection == 12)
+	  {
+		 Write_7_Segment(1, 3);
+		 Write_7_Segment(2, 4);
+		 TM1723_Update_Screen();
+		 RE(&hfdcan1, CellCount);
+	  }
+else if(protocol_selection == 13)
+	  {
+		 Write_7_Segment(1, 3);
+		 Write_7_Segment(3, 4);
+		 TM1723_Update_Screen();
+		 NE(&hfdcan1, CellCount);
+	  }
+else if(protocol_selection == 22)
+	  {
+		 Write_7_Segment(2, 3);
+		 Write_7_Segment(2, 4);
+		 TM1723_Update_Screen();
+		 BS(&hfdcan1, CellCount);
+	  }
+
+
 //End the execution of protocol
 
 //Start to update cell count and manage the cell count
@@ -215,63 +368,52 @@ else if(protocol_selection == 6)
   if(TM1723_Read_Switches() == 2)
 	{
 	  protocol_selection++;
-	    if(protocol_selection>6)
+	    if(protocol_selection>22)
 			  {
 				  protocol_selection=0;
 			  }
-	    HAL_Delay(2);
-	    switch(protocol_selection)
+				HAL_Delay(2);
+			switch(protocol_selection)
 			  {
-			  case 0://for JBD
-				  HAL_FDCAN_Stop(&hfdcan1);
-				  //FDCAN_HandleTypeDef hfdcan1;
-				  MX_FDCAN1_Init();//500Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
-			  case 1://for DALY
-				  HAL_FDCAN_Stop(&hfdcan1);
-				 // FDCAN_HandleTypeDef DALY_hfdcan1;
-				  DALY_MX_FDCAN1_Init();//250Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
-			  case 2://for Ruchira New
-				  HAL_FDCAN_Stop(&hfdcan1);
-				 // FDCAN_HandleTypeDef STH_hfdcan1;
-				  STH_MX_FDCAN1_Init();//500Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
+			  case 0://0-7 all all baud rate set is 500Kbps
+			  case 1:
+			  case 2:
 			  case 3:
-			  case 4: //for Inverted Daly
-				  HAL_FDCAN_Stop(&hfdcan1);
-				 // FDCAN_HandleTypeDef STH_hfdcan1;
-				  MX_FDCAN1_Init();//500Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
-			  case 5://for sonalika
-				  HAL_FDCAN_Stop(&hfdcan1);
-				 // FDCAN_HandleTypeDef JLN;
-				  DALY_MX_FDCAN1_Init();//250Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
-			  case 6://for sonalika
-				  HAL_FDCAN_Stop(&hfdcan1);
-				 // FDCAN_HandleTypeDef JLN;
-				  MX_FDCAN1_Init();//500Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
+			  case 4:
+			  case 5:
+			  case 6:
+			  case 7:
+			  case 8:
+			  case 9:
+			  case 10:
+			  case 11:
+			  case 12:
+			  case 13:
+			  case 22:
+			  HAL_FDCAN_Stop(&hfdcan1);
+			  MX_FDCAN1_Init();//500Kbps
+			  HAL_FDCAN_Start(&hfdcan1);
+			  HAL_Delay(1);
+			  break;
+			  case 14:
+			  case 15:
+			  case 16://0-7 all all baud rate set is 500Kbps
+			  case 17:
+			  case 18:
+			  case 19:
+			  case 20:
+			  case 21://for 250Kbps
+			  HAL_FDCAN_Stop(&hfdcan1);
+			  DALY_MX_FDCAN1_Init();//250Kbps
+			  HAL_FDCAN_Start(&hfdcan1);
+			  HAL_Delay(1);
+			  break;
 			  default://By default it is a JBD
-				  HAL_FDCAN_Stop(&hfdcan1);
-				  //FDCAN_HandleTypeDef hfdcan1;
-				  MX_FDCAN1_Init();//500Kbps
-				  HAL_FDCAN_Start(&hfdcan1);
-				  HAL_Delay(1);
-				  break;
+			  HAL_FDCAN_Stop(&hfdcan1);
+			  MX_FDCAN1_Init();//500Kbps
+			  HAL_FDCAN_Start(&hfdcan1);
+			  HAL_Delay(1);
+			  break;
 			  }
 	  while(TM1723_Read_Switches() == 2);
 //End to change protocol
@@ -337,12 +479,7 @@ void SystemClock_Config(void)
   * @param None
   * @retval None
   */
-/**
-  * @brief FDCAN1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_FDCAN1_Init(void)//for JBD
+void MX_FDCAN1_Init(void)
 {
 
   /* USER CODE BEGIN FDCAN1_Init 0 */
@@ -381,92 +518,43 @@ static void MX_FDCAN1_Init(void)//for JBD
 }
 
 /**
-  * @brief GPIO Initialization Function
+  * @brief TIM7 Initialization Function
   * @param None
   * @retval None
   */
-static void DALY_MX_FDCAN1_Init(void)
+static void MX_TIM7_Init(void)
 {
 
-  /* USER CODE BEGIN FDCAN1_Init 0 */
+  /* USER CODE BEGIN TIM7_Init 0 */
 
-  /* USER CODE END FDCAN1_Init 0 */
+  /* USER CODE END TIM7_Init 0 */
 
-  /* USER CODE BEGIN FDCAN1_Init 1 */
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
 
-  /* USER CODE END FDCAN1_Init 1 */
-	hfdcan1.Instance = FDCAN1;
-	hfdcan1.Init.ClockDivider = FDCAN_CLOCK_DIV1;
-	hfdcan1.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
-	hfdcan1.Init.Mode = FDCAN_MODE_NORMAL;
-	hfdcan1.Init.AutoRetransmission = DISABLE;
-	hfdcan1.Init.TransmitPause = DISABLE;
-	hfdcan1.Init.ProtocolException = DISABLE;
-	hfdcan1.Init.NominalPrescaler = 64;
-	hfdcan1.Init.NominalSyncJumpWidth = 1;
-	hfdcan1.Init.NominalTimeSeg1 = 8;
-	hfdcan1.Init.NominalTimeSeg2 = 1;
-	hfdcan1.Init.DataPrescaler = 1;
-	hfdcan1.Init.DataSyncJumpWidth = 1;
-	hfdcan1.Init.DataTimeSeg1 = 1;
-	hfdcan1.Init.DataTimeSeg2 = 1;
-	hfdcan1.Init.StdFiltersNbr = 0;
-	hfdcan1.Init.ExtFiltersNbr = 0;
-	hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
-  if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
+  /* USER CODE BEGIN TIM7_Init 1 */
+
+  /* USER CODE END TIM7_Init 1 */
+  htim7.Instance = TIM7;
+  htim7.Init.Prescaler = 16000;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim7.Init.Period = 2500;
+  htim7.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim7) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN FDCAN1_Init 2 */
-
-  /* USER CODE END FDCAN1_Init 2 */
-
-}
-
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-
-static void STH_MX_FDCAN1_Init(void)//for JBD
-{
-
-  /* USER CODE BEGIN FDCAN1_Init 0 */
-
-  /* USER CODE END FDCAN1_Init 0 */
-
-  /* USER CODE BEGIN FDCAN1_Init 1 */
-
-  /* USER CODE END FDCAN1_Init 1 */
-	hfdcan1.Instance = FDCAN1;
-	hfdcan1.Init.ClockDivider = FDCAN_CLOCK_DIV1;
-	hfdcan1.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
-	hfdcan1.Init.Mode = FDCAN_MODE_NORMAL;
-	hfdcan1.Init.AutoRetransmission = DISABLE;
-	hfdcan1.Init.TransmitPause = DISABLE;
-	hfdcan1.Init.ProtocolException = DISABLE;
-	hfdcan1.Init.NominalPrescaler = 64;
-	hfdcan1.Init.NominalSyncJumpWidth = 1;
-	hfdcan1.Init.NominalTimeSeg1 = 2;
-	hfdcan1.Init.NominalTimeSeg2 = 2;
-	hfdcan1.Init.DataPrescaler = 1;
-	hfdcan1.Init.DataSyncJumpWidth = 1;
-	hfdcan1.Init.DataTimeSeg1 = 1;
-	hfdcan1.Init.DataTimeSeg2 = 1;
-	hfdcan1.Init.StdFiltersNbr = 0;
-	hfdcan1.Init.ExtFiltersNbr = 0;
-	hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
-  if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim7, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN FDCAN1_Init 2 */
+  /* USER CODE BEGIN TIM7_Init 2 */
 
-  /* USER CODE END FDCAN1_Init 2 */
+  /* USER CODE END TIM7_Init 2 */
 
 }
+
 /**
   * @brief GPIO Initialization Function
   * @param None
@@ -513,7 +601,66 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if(htim->Instance == TIM7)
+	{
+		j++;
 
+		isQuaterSecSet = 1;
+		if((j%2)==0)  // Checking is number is even .. is so then half second passed
+		{
+			isHalfSecSet=1;
+		}
+		if(oneMinuteTimer!=0)
+		{
+			oneMinuteTimer--;
+		}
+
+	}
+}
+/**
+  * @brief GPIO Initialization Function
+  * @param None
+  * @retval None
+  */
+void DALY_MX_FDCAN1_Init(void)
+{
+
+  /* USER CODE BEGIN FDCAN1_Init 0 */
+
+  /* USER CODE END FDCAN1_Init 0 */
+
+  /* USER CODE BEGIN FDCAN1_Init 1 */
+
+  /* USER CODE END FDCAN1_Init 1 */
+	hfdcan1.Instance = FDCAN1;
+	hfdcan1.Init.ClockDivider = FDCAN_CLOCK_DIV1;
+	hfdcan1.Init.FrameFormat = FDCAN_FRAME_CLASSIC;
+	hfdcan1.Init.Mode = FDCAN_MODE_NORMAL;
+	hfdcan1.Init.AutoRetransmission = DISABLE;
+	hfdcan1.Init.TransmitPause = DISABLE;
+	hfdcan1.Init.ProtocolException = DISABLE;
+	hfdcan1.Init.NominalPrescaler = 64;
+	hfdcan1.Init.NominalSyncJumpWidth = 1;
+	hfdcan1.Init.NominalTimeSeg1 = 8;
+	hfdcan1.Init.NominalTimeSeg2 = 1;
+	hfdcan1.Init.DataPrescaler = 1;
+	hfdcan1.Init.DataSyncJumpWidth = 1;
+	hfdcan1.Init.DataTimeSeg1 = 1;
+	hfdcan1.Init.DataTimeSeg2 = 1;
+	hfdcan1.Init.StdFiltersNbr = 0;
+	hfdcan1.Init.ExtFiltersNbr = 0;
+	hfdcan1.Init.TxFifoQueueMode = FDCAN_TX_FIFO_OPERATION;
+  if (HAL_FDCAN_Init(&hfdcan1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN FDCAN1_Init 2 */
+
+  /* USER CODE END FDCAN1_Init 2 */
+
+}
 /* USER CODE END 4 */
 
 /**

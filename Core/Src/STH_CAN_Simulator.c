@@ -28,143 +28,153 @@ void STH_BMS_Communication(FDCAN_HandleTypeDef* hf, uint8_t CellCount)
 	STH_TxHeader.DataLength     = FDCAN_DLC_BYTES_8;
 	STH_TxHeader.FDFormat	    = FDCAN_CLASSIC_CAN;
 
-	for( i=1;i<8;i++)
+if(HAL_FDCAN_GetRxFifoFillLevel(STH_fdcan1h, FDCAN_RX_FIFO0) > 0)
 	{
-		switch(i)
+		HAL_FDCAN_GetRxMessage(STH_fdcan1h,FDCAN_RX_FIFO0,&STH_RxHeader,STH_canTxData);
+		HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
+		if(	(STH_RxHeader.RxFrameType == FDCAN_REMOTE_FRAME)&&
+			(STH_RxHeader.IdType == FDCAN_STANDARD_ID)&&
+			(STH_RxHeader.FDFormat == FDCAN_CLASSIC_CAN)&& (STH_RxHeader.Identifier == 0x1AA))
 		{
+				for( i=1;i<8;i++)
+				{
+					switch(i)
+					{
+						case 4:	//0x4ab
+							STH_TxHeader.Identifier = 0x000004ab;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-			case 4:	//0x4ab
-				STH_TxHeader.Identifier = 0x000004ab;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x03;
+							STH_canTxData[1] = 0x00;
+							STH_canTxData[2] = 0x03;
+							STH_canTxData[3] = 0x00;
+							STH_canTxData[4] = 0x16;
+							STH_canTxData[5] = 0x05;
+							STH_canTxData[6] = 0x16;
+							STH_canTxData[7] = 0x05;
 
-				STH_canTxData[0] = 0x03;
-				STH_canTxData[1] = 0x00;
-				STH_canTxData[2] = 0x03;
-				STH_canTxData[3] = 0x00;
-				STH_canTxData[4] = 0x16;
-				STH_canTxData[5] = 0x05;
-				STH_canTxData[6] = 0x16;
-				STH_canTxData[7] = 0x05;
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
 
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
+						case 7:	//0x4ac
+							STH_TxHeader.Identifier = 0x000004ac;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-			case 7:	//0x4ac
-				STH_TxHeader.Identifier = 0x000004ac;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x09;
+							STH_canTxData[1] = 0x00;
+							STH_canTxData[2] = 0x00;
+							STH_canTxData[3] = 0x00;
+							STH_canTxData[4] = 0xC8;
+							STH_canTxData[5] = 0x00;
+							STH_canTxData[6] = 0xC8;
+							STH_canTxData[7] = 0x00;
+							//09 00 00 00 c8 00 c8 00
 
-				STH_canTxData[0] = 0x09;
-				STH_canTxData[1] = 0x00;
-				STH_canTxData[2] = 0x00;
-				STH_canTxData[3] = 0x00;
-				STH_canTxData[4] = 0xC8;
-				STH_canTxData[5] = 0x00;
-				STH_canTxData[6] = 0xC8;
-				STH_canTxData[7] = 0x00;
-				//09 00 00 00 c8 00 c8 00
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
+						case 2:	//0x1aa
+							STH_TxHeader.Identifier = 0x000001aa;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
-			case 2:	//0x1aa
-				STH_TxHeader.Identifier = 0x000001aa;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x00;
+							STH_canTxData[1] = 0x3C;//0x3C; STM checking
+							STH_canTxData[2] = 0x00;//
+							STH_canTxData[3] = 0x00;//0x02 is for the full condition in STM32
+							STH_canTxData[4] = 0x00;
+							STH_canTxData[5] = 0x00;
+							STH_canTxData[6] = 0x00;
+							STH_canTxData[7] = 0x00;
 
-				STH_canTxData[0] = 0x00;
-				STH_canTxData[1] = 0x3C;
-				STH_canTxData[2] = 0x00;
-				STH_canTxData[3] = 0x00;
-				STH_canTxData[4] = 0x00;
-				STH_canTxData[5] = 0x00;
-				STH_canTxData[6] = 0x00;
-				STH_canTxData[7] = 0x00;
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
 
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
+						case 6:	//0x2aa
+							STH_TxHeader.Identifier = 0x000002aa;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-			case 6:	//0x2aa
-				STH_TxHeader.Identifier = 0x000002aa;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x64;//0x5E; == 94%
+							STH_canTxData[1] = 0xC8;
+							STH_canTxData[2] = 0x00;
+							STH_canTxData[3] = 0x32;
+							STH_canTxData[4] = 0x00;
+							STH_canTxData[5] = 0x39;
+							STH_canTxData[6] = 0x00;
+							STH_canTxData[7] = 0x64;
+							//5e c8 00 32 00 39 00 64
 
-				STH_canTxData[0] = 0x5E;
-				STH_canTxData[1] = 0xC8;
-				STH_canTxData[2] = 0x00;
-				STH_canTxData[3] = 0x32;
-				STH_canTxData[4] = 0x00;
-				STH_canTxData[5] = 0x39;
-				STH_canTxData[6] = 0x00;
-				STH_canTxData[7] = 0x64;
-				//5e c8 00 32 00 39 00 64
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
 
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
+						case 1:	//0x3aa
+							STH_TxHeader.Identifier = 0x000003aa;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-			case 1:	//0x3aa
-				STH_TxHeader.Identifier = 0x000003aa;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x00;
+							STH_canTxData[1] = 0x00;
+							STH_canTxData[2] = 0x34;
+							STH_canTxData[3] = 0x00;
+							STH_canTxData[4] = 0xD2;
+							STH_canTxData[5] = 0x00;
+							STH_canTxData[6] = 0x64;
+							STH_canTxData[7] = 0x00;
 
-				STH_canTxData[0] = 0x00;
-				STH_canTxData[1] = 0x00;
-				STH_canTxData[2] = 0x34;
-				STH_canTxData[3] = 0x00;
-				STH_canTxData[4] = 0xD2;
-				STH_canTxData[5] = 0x00;
-				STH_canTxData[6] = 0x64;
-				STH_canTxData[7] = 0x00;
+							//00 00 34 00 d2 00 64 00
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
 
-				//00 00 34 00 d2 00 64 00
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
+						case 3:	//0x4aa
+							STH_TxHeader.Identifier = 0x000004aa;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-			case 3:	//0x4aa
-				STH_TxHeader.Identifier = 0x000004aa;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x00;
+							STH_canTxData[1] = 0x3C;
+							STH_canTxData[2] = 0x00;
+							STH_canTxData[3] = 0x00;
+							STH_canTxData[4] = 0x00;
+							STH_canTxData[5] = 0x00;
+							STH_canTxData[6] = 0x00;
+							STH_canTxData[7] = 0x00;
 
-				STH_canTxData[0] = 0x00;
-				STH_canTxData[1] = 0x3C;
-				STH_canTxData[2] = 0x00;
-				STH_canTxData[3] = 0x00;
-				STH_canTxData[4] = 0x00;
-				STH_canTxData[5] = 0x00;
-				STH_canTxData[6] = 0x00;
-				STH_canTxData[7] = 0x00;
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
 
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
+						case 5:	//0x3ab
+							STH_TxHeader.Identifier = 0x000003ab;
+							STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-			case 5:	//0x3ab
-				STH_TxHeader.Identifier = 0x000003ab;
-				STH_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
+							STH_canTxData[0] = 0x16;
+							STH_canTxData[1] = 0x16;
+							STH_canTxData[2] = 0x00;
+							STH_canTxData[3] = 0x00;
+							STH_canTxData[4] = 0x00;
+							STH_canTxData[5] = 0x00;
+							STH_canTxData[6] = 0x00;
+							STH_canTxData[7] = 0x00;
 
-				STH_canTxData[0] = 0x16;
-				STH_canTxData[1] = 0x16;
-				STH_canTxData[2] = 0x00;
-				STH_canTxData[3] = 0x00;
-				STH_canTxData[4] = 0x00;
-				STH_canTxData[5] = 0x00;
-				STH_canTxData[6] = 0x00;
-				STH_canTxData[7] = 0x00;
+							if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
+								HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
+							HAL_Delay(1);
+							break;
+					}
+				}
+				HAL_Delay(1000);
+				//count++;
 
-				if( HAL_FDCAN_GetTxFifoFreeLevel(STH_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(STH_fdcan1h, &STH_TxHeader, STH_canTxData);
-				HAL_Delay(1);
-				break;
+			}
+
 		}
-	}
-	HAL_Delay(1000);
-	//count++;
-
 }
 //	if(HAL_FDCAN_GetRxFifoFillLevel(STH_fdcan1h, FDCAN_RX_FIFO0) > 0)
 //	{

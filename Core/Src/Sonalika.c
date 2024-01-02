@@ -25,205 +25,49 @@ void sonalika(FDCAN_HandleTypeDef* hf, uint8_t CellCount)
 	S_TxHeader.DataLength     = FDCAN_DLC_BYTES_8;
 	S_TxHeader.FDFormat	    = FDCAN_CLASSIC_CAN;
 
-	if(HAL_FDCAN_GetRxFifoFillLevel(S_fdcan1h, FDCAN_RX_FIFO0) > 0)
-	{
-		HAL_FDCAN_GetRxMessage(S_fdcan1h,FDCAN_RX_FIFO0,&S_RxHeader,S_canRxData);
-
-		HAL_GPIO_TogglePin(LED_GPIO_Port,LED_Pin);
-
-		if(	(S_RxHeader.RxFrameType == FDCAN_DATA_FRAME)&&
-			(S_RxHeader.IdType == FDCAN_EXTENDED_ID)&&
-			(S_RxHeader.FDFormat == FDCAN_CLASSIC_CAN))
-		{
-
-			switch(S_RxHeader.Identifier)
+			//switch(S_RxHeader.Identifier)
+			switch(1)
 			{
-			case 0x18FF50E5:
-				S_TxHeader.Identifier = 0x1806E5F4;
+			//case 0x18FF50E5:
+			case 1:
+
+				S_TxHeader.Identifier = 0x1F10FA02;
 				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-				S_canTxData[0] = ((uint16_t)((float)CellCount*3.25*10) >> 8);//VOLTAGE HIGH
-				S_canTxData[1] = ((uint16_t)((float)CellCount*3.25*10) & 0xff);//VOLTAGE LOW
-				S_canTxData[2] = 0x00;//CURRENT HIGH
-				S_canTxData[3] = 0xFA;//CURRENT LOW	25A current
-				S_canTxData[4] = 0x00;//START CHARGING AND STOP CHARGING
-				S_canTxData[5] = 0x00;//	 N/A
-				S_canTxData[6] = 0x00;//   N/A
-				S_canTxData[7] = 0x00;//   N/A
+				S_canTxData[0] = 0x30; //Cell 1 High Byte
+				S_canTxData[1] = 0x00; //Cell 1 Low Byte
+				S_canTxData[2] = 0x28; //Cell 2 High Byte
+				S_canTxData[3] = 0x75; //Cell 2 Low Byte
+				S_canTxData[4] = 0x80; //Cell 3 High Byte
+				S_canTxData[5] = 0x14; //Cell 3 Low Byte
+				S_canTxData[6] = 0x03; //Cell 4 High Byte
+				S_canTxData[7] = 0x00; //Cell 4 Low Byte
 
 				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
 					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
+				 HAL_Delay(1);
 
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FFE5F4;
+				S_TxHeader.Identifier = 0x1F11FA02;
 				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
 
-				S_canTxData[0] = ((uint16_t)((float)CellCount*3.25*10) >> 8);//VOLTAGE HIGH
-				S_canTxData[1] = ((uint16_t)((float)CellCount*3.25*10) & 0xff);//VOLTAGE LOW
-				S_canTxData[2] = 0x00;//CURRENT HIGH
-				S_canTxData[3] = 0xFA;//CURRENT LOW	25A current
-				S_canTxData[4] = 0x00;//START CHARGING AND STOP CHARGING
-				S_canTxData[5] = 0x00;//	 N/A
-				S_canTxData[6] = 0x00;//   N/A
-				S_canTxData[7] = 0x00;//   N/A
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-
-				 HAL_Delay(2);
-
-
-				S_TxHeader.Identifier = 0x18FF01FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x01; //Battery Voltage High Byte
-				S_canTxData[1] = 0xF4; //Battery Voltage Low Byte
-				S_canTxData[2] = 0x00; //Battery Current High Byte
-				S_canTxData[3] = 0x96; //Battery Current Low Byte
-				S_canTxData[4] = 0x58; //Battery SoC
-				S_canTxData[5] = 0x41; //Battery Temperature
-				S_canTxData[6] = 0x01; //Charging Status
-				S_canTxData[7] = 0x00; //Reserved
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF02FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x00;
-				S_canTxData[1] = 0x00;
-				S_canTxData[2] = 0x00;
-				S_canTxData[3] = CellCount;  // No of cell strings
-				S_canTxData[4] = 0x00;
-				S_canTxData[5] = 0x00;
-				S_canTxData[6] = 0x00;
-				S_canTxData[7] = 0x00;
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF03FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE4; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF3; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF4; //Cell 3 Low Byte
-				S_canTxData[6] = 0x0C; //Cell 4 High Byte
-				S_canTxData[7] = 0xF5; //Cell 4 Low Byte
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF04FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE5; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF6; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF5; //Cell 3 Low Byte
-				S_canTxData[6] = 0x0C; //Cell 4 High Byte
-				S_canTxData[7] = 0xF1; //Cell 4 Low Byte
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF05FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE5; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF6; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF5; //Cell 3 Low Byte
-				S_canTxData[6] = 0x0C; //Cell 4 High Byte
-				S_canTxData[7] = 0xF1; //Cell 4 Low Byte
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF06FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE5; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF6; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF5; //Cell 3 Low Byte
-				S_canTxData[6] = 0x0C; //Cell 4 High Byte
-				S_canTxData[7] = 0xF1; //Cell 4 Low Byte
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF07FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE5; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF6; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF5; //Cell 3 Low Byte
-				S_canTxData[6] = 0x0C; //Cell 4 High Byte
-				S_canTxData[7] = 0xF1; //Cell 4 Low Byte
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF08FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE5; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF6; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF5; //Cell 3 Low Byte
-				S_canTxData[6] = 0x0C; //Cell 4 High Byte
-				S_canTxData[7] = 0xF1; //Cell 4 Low Byte
-
-				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
-					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
-
-				S_TxHeader.Identifier = 0x18FF09FF;
-				S_TxHeader.DataLength = FDCAN_DLC_BYTES_8;
-
-				S_canTxData[0] = 0x0C; //Cell 1 High Byte
-				S_canTxData[1] = 0xE5; //Cell 1 Low Byte
-				S_canTxData[2] = 0x0C; //Cell 2 High Byte
-				S_canTxData[3] = 0xF6; //Cell 2 Low Byte
-				S_canTxData[4] = 0x0C; //Cell 3 High Byte
-				S_canTxData[5] = 0xF5; //Cell 3 Low Byte
+				S_canTxData[0] = 0xA0; //Cell 1 High Byte
+				S_canTxData[1] = 0x9F; //Cell 1 Low Byte
+				S_canTxData[2] = 0xB6; //Cell 2 High Byte
+				S_canTxData[3] = 0x0E; //Cell 2 Low Byte
+				S_canTxData[4] = 0x9F; //Cell 3 High Byte
+				S_canTxData[5] = 0x0E; //Cell 3 Low Byte
 				S_canTxData[6] = 0x00; //Cell 4 High Byte
 				S_canTxData[7] = 0x00; //Cell 4 Low Byte
 
 				if( HAL_FDCAN_GetTxFifoFreeLevel(S_fdcan1h) > 0)
 					HAL_FDCAN_AddMessageToTxFifoQ(S_fdcan1h, &S_TxHeader, S_canTxData);
-				 HAL_Delay(2);
+				 HAL_Delay(1);
 
-
+				 HAL_Delay(998);
 
 			break;
 
 			}
-		}
+		//}
 	}
-}
+//}
